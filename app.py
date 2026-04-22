@@ -136,10 +136,20 @@ def predict():
         # CLASSIFICATION
         risk, suggestion = classify_risk(risk_score)
 
-        # DOCTOR FEATURE (FIXED POSITION)
-        doctors = []
+        # DYNAMIC SUPPORT OPTIONS
+        support_options = []
         if risk == "HIGH":
-            doctors = get_nearby_doctors()
+            support_options = [
+                ("Psychologist Near Me", "https://www.google.com/maps/search/psychologist+near+me", "fa-solid fa-user-doctor", "Book Appointment"),
+                ("Mental Health Clinic", "https://www.google.com/maps/search/mental+health+clinic+near+me", "fa-solid fa-house-medical", "Get Help"),
+                ("General Physician", "https://www.google.com/maps/search/general+physician+near+me", "fa-solid fa-stethoscope", "Consult"),
+            ]
+        else:
+            support_options = [
+                ("University Counseling", "https://www.google.com/maps/search/university+counseling+services", "fa-regular fa-comments", "Book Appointment"),
+                ("Peer Support Group", "https://www.google.com/maps/search/peer+support+group", "fa-solid fa-users", "Join Session"),
+                ("Academic Advisor", "https://www.google.com/maps/search/academic+advisor", "fa-solid fa-user-tie", "Schedule Meeting")
+            ]
 
         return render_template(
             'index.html',
@@ -147,7 +157,7 @@ def predict():
             risk=risk,
             suggestion=suggestion,
             reasons=reasons,
-            doctors=doctors
+            support_options=support_options
         )
 
     except Exception as e:

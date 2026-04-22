@@ -1,147 +1,565 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Academic Burnout Predictor</title>
-
+    <title>AI Academic Well-being Predictor</title>
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts for sleek typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #4F46E5;
-            --background: #F3F4F6;
-            --surface: #FFFFFF;
-            --text: #1F2937;
-        }
-
+        /* CSS reset and base styles */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            font-family: 'Segoe UI', sans-serif;
-            background-color: var(--background);
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            font-family: 'Inter', sans-serif;
+            background-color: #080310;
+            color: #ffffff;
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+            padding-bottom: 40px;
         }
 
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            width: 400px;
+        /* Background glows matching image */
+        .bg-glow-1 {
+            position: fixed; top: 30%; left: -10%; width: 50vw; height: 50vw;
+            background: radial-gradient(circle, rgba(138,43,226,0.15) 0%, rgba(0,0,0,0) 70%);
+            z-index: -1;
+        }
+        .bg-glow-2 {
+            position: fixed; top: 40%; right: -10%; width: 60vw; height: 60vw;
+            background: radial-gradient(circle, rgba(147,51,234,0.1) 0%, rgba(0,0,0,0) 70%);
+            z-index: -1;
         }
 
-        input {
+        /* Floating 3D Bubbles */
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), rgba(168, 85, 247, 0.6) 30%, rgba(75,0,130,0.8) 70%, rgba(0,0,0,0.9));
+            box-shadow: inset 0 0 20px rgba(255,255,255,0.4), 0 0 20px rgba(168, 85, 247, 0.4);
+            z-index: -1;
+        }
+        .bubble-1 { top: 6%; left: 16%; width: 35px; height: 35px; }
+        .bubble-2 { top: 12%; left: 14%; width: 22px; height: 22px; }
+        .bubble-3 { top: 4%; right: 22%; width: 50px; height: 50px; }
+        .bubble-4 { top: 12%; right: 18%; width: 18px; height: 18px; }
+
+        header { margin-top: 50px; text-align: center; z-index: 10;}
+        h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #e9d5ff, #c084fc, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 35px rgba(168, 85, 247, 0.4);
+            margin-bottom: 30px;
+            letter-spacing: -0.5px;
+        }
+
+        /* Main Glassmorphism Form Container */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.1);
             width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
+            max-width: 800px;
+            padding: 30px 40px;
+            margin-bottom: 20px;
+            z-index: 10;
+            position: relative;
         }
 
-        button {
-            width: 100%;
-            padding: 12px;
-            background: #4F46E5;
-            color: white;
+        .panel-title {
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        /* Form Grid */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group { display: flex; flex-direction: column; }
+        .form-group label {
+            font-size: 0.85rem;
+            color: #e5e7eb;
+            margin-bottom: 8px;
+            margin-left: 5px;
+        }
+
+        .input-wrapper {
+            display: flex;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(168, 85, 247, 0.5);
+            border-radius: 10px;
+            padding: 10px 15px;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
+        }
+        
+        .input-wrapper:focus-within {
+            border-color: #d8b4fe;
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.4), inset 0 2px 5px rgba(0,0,0,0.5);
+        }
+
+        .input-icon {
+            color: #d8b4fe;
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        input, select {
+            background: transparent;
             border: none;
+            color: white;
+            font-size: 1rem;
+            width: 100%;
+            outline: none;
+        }
+        
+        input::placeholder { color: #9ca3af; }
+        
+        /* Range Slider Styling */
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 3px;
+            outline: none;
+            position: relative;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #e9d5ff;
+            cursor: pointer;
+            box-shadow: 0 0 12px #d8b4fe;
+        }
+        .range-value {
+            margin-left: 12px;
+            font-weight: 600;
+            color: #e9d5ff;
+            min-width: 45px;
+            text-align: right;
         }
 
-        .result-box {
-            margin-top: 20px;
-            padding: 10px;
+        /* Analyze Button acts as form submit */
+        .submit-btn {
+            grid-column: span 2;
+            display: none; /* Hide real submit to show loading */
+        }
+        
+        .fake-submit-btn {
+            grid-column: span 2;
+            background: transparent;
+            color: transparent;
+            border: none;
+            padding: 1px;
+            cursor: pointer;
         }
 
-        .low {
-            background: #d1fae5;
+        /* Loading Overlay overlaying the glass-panel */
+        .loading-overlay {
+            display: none;
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(20, 10, 30, 0.75);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(168, 85, 247, 0.4);
+            border-radius: 12px;
+            padding: 30px 60px;
+            text-align: center;
+            z-index: 100;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.8), inset 0 0 20px rgba(168, 85, 247, 0.2);
+            transition: opacity 0.3s;
+        }
+        .loading-overlay.active { display: block; }
+        
+        .loading-text {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: white;
+        }
+        .spinner {
+            width: 45px; height: 45px;
+            border: 4px solid rgba(168, 85, 247, 0.2);
+            border-top-color: #c084fc;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* Dynamic Result Section based on exact image */
+        .result-container {
+            display: flex;
+            width: 100%;
+            max-width: 800px;
+            background: rgba(20, 5, 5, 0.5); /* dark red tint default */
+            border: 1px solid rgba(239, 68, 68, 0.6); /* Red border */
+            border-radius: 16px;
+            padding: 25px 30px;
+            margin-bottom: 25px;
+            gap: 40px;
+            box-shadow: 0 10px 30px rgba(239, 68, 68, 0.15), inset 0 0 25px rgba(239, 68, 68, 0.08);
+            backdrop-filter: blur(10px);
+        }
+        
+        .result-container.low {
+            background: rgba(5, 20, 10, 0.5);
+            border-color: rgba(16, 185, 129, 0.6);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.15), inset 0 0 25px rgba(16, 185, 129, 0.08);
+        }
+        .result-container.medium {
+            background: rgba(20, 15, 5, 0.5);
+            border-color: rgba(245, 158, 11, 0.6);
+            box-shadow: 0 10px 30px rgba(245, 158, 11, 0.15), inset 0 0 25px rgba(245, 158, 11, 0.08);
         }
 
-        .medium {
-            background: #fef3c7;
+        .gauge-section {
+            flex: 0 0 250px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-right: 1px solid rgba(255,255,255,0.08);
+            position: relative;
         }
-
-        .high {
-            background: #fee2e2;
+        
+        .risk-label {
+            position: absolute;
+            top: -5px; left: 0;
+            color: #ef4444;
+            font-weight: 600;
+            font-size: 0.9rem;
         }
+        .result-container.low .risk-label { color: #10b981; }
+        .result-container.medium .risk-label { color: #f59e0b; }
 
-        .doctor-box {
-            margin-top: 20px;
-            padding: 10px;
-            background: #e0f2fe;
+        /* Gauge Chart implementation */
+        .gauge {
+            width: 180px; height: 90px;
+            position: relative;
+            overflow: hidden;
+            margin-top: 25px;
+        }
+        .gauge-bg {
+            width: 180px; height: 180px;
+            border-radius: 50%;
+            border: 10px solid rgba(255,255,255,0.05);
+            position: absolute;
+            top: 0; left: 0;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
+        .gauge-fill {
+            width: 180px; height: 180px;
+            border-radius: 50%;
+            border: 10px solid #ef4444;
+            border-bottom-color: transparent !important;
+            border-right-color: transparent !important;
+            position: absolute;
+            top: 0; left: 0;
+            transform: rotate(-45deg); /* initial state (0) */
+            transition: transform 1.5s cubic-bezier(0.2, 1, 0.2, 1);
+            filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.6));
+        }
+        .result-container.low .gauge-fill { 
+            border-color: #10b981; filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.6)); 
+        }
+        .result-container.medium .gauge-fill { 
+            border-color: #f59e0b; filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.6)); 
+        }
+        
+        .gauge-text {
+            position: absolute;
+            bottom: 0px; width: 100%;
+            text-align: center;
+        }
+        .gauge-text span { font-size: 0.8rem; color: #9ca3af; display: block; margin-bottom: 2px;}
+        .gauge-text strong { font-size: 1.8rem; font-weight: 700; color: white;}
+
+        .reasons-section {
+            flex: 1;
+            padding-left: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .reasons-section h3 {
+            font-size: 1.05rem;
+            margin-bottom: 15px;
+            color: #ffffff;
+        }
+        .reason-list { list-style: none; }
+        .reason-list li {
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+            color: #d1d5db;
+            margin-bottom: 12px;
+        }
+        .reason-list li i {
+            color: #ef4444;
+            margin-right: 12px;
+            font-size: 0.85rem;
+            text-shadow: 0 0 5px rgba(239, 68, 68, 0.5);
+        }
+        .result-container.low .reason-list li i { color: #10b981; text-shadow: 0 0 5px rgba(16, 185, 129, 0.5); }
+        .result-container.medium .reason-list li i { color: #f59e0b; text-shadow: 0 0 5px rgba(245, 158, 11, 0.5); }
+
+        /* Nearby Support Options Section */
+        .support-wrapper {
+            width: 100%;
+            max-width: 800px;
+        }
+        .support-title {
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: white;
+        }
+        .support-cards {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            padding-bottom: 12px;
+        }
+        
+        /* Styled Scrollbar */
+        .support-cards::-webkit-scrollbar { height: 6px; }
+        .support-cards::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); border-radius: 4px; }
+        .support-cards::-webkit-scrollbar-thumb { background: rgba(168, 85, 247, 0.3); border-radius: 4px; }
+        .support-cards::-webkit-scrollbar-thumb:hover { background: rgba(168, 85, 247, 0.5); }
+
+        .support-card {
+            min-width: 250px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            border-radius: 12px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: white;
+            transition: all 0.2s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .support-card:hover {
+            background: rgba(168, 85, 247, 0.1);
+            border-color: #d8b4fe;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(168, 85, 247, 0.2);
+        }
+        .support-icon {
+            background: rgba(255, 255, 255, 0.1);
+            width: 40px; height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #d8b4fe;
+            margin-right: 14px;
+            flex-shrink: 0;
+            font-size: 1.1rem;
+        }
+        .support-info { flex: 1; }
+        .support-name { font-size: 0.85rem; font-weight: 600; margin-bottom: 3px; }
+        .support-action { font-size: 0.75rem; color: #a1a1aa; }
+        .support-external { color: #6b7280; font-size: 0.8rem;}
+
+        footer {
+            margin-top: 50px;
+            font-size: 0.75rem;
+            color: #6b7280;
+            text-align: center;
+        }
+        
+        @media (max-width: 650px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .result-container { flex-direction: column; gap: 20px; }
+            .gauge-section { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 20px; flex: auto; }
+            .reasons-section { padding-left: 0; }
         }
     </style>
 </head>
-
 <body>
 
-    <div class="container">
-        <h2>Burnout Predictor</h2>
+    <!-- Dynamic Glowing Background -->
+    <div class="bg-glow-1"></div>
+    <div class="bg-glow-2"></div>
+    
+    <!-- Floating Glass Bubbles -->
+    <div class="bubble bubble-1"></div>
+    <div class="bubble bubble-2"></div>
+    <div class="bubble bubble-3"></div>
+    <div class="bubble bubble-4"></div>
 
-        <form action="/predict" method="POST">
-            <div class="form-group">
-                <label>Attendance (%)</label>
-                <input type="number" name="attendance" min="0" max="100" placeholder="e.g., 85" required>
+    <header>
+        <h1>AI Academic Well-being Predictor</h1>
+    </header>
+
+    <main style="width: 100%; display: flex; flex-direction: column; align-items: center; padding: 0 20px;">
+        
+        <div class="glass-panel" id="formPanel">
+            <div class="panel-title">Input Your Data for Analysis</div>
+            
+            <form action="/predict" method="POST" id="predictForm">
+                <div class="form-grid">
+                    
+                    <div class="form-group">
+                        <label>Attendance Rate (Last Month)</label>
+                        <div class="input-wrapper">
+                            <div class="input-icon"><i class="fa-regular fa-clock"></i></div>
+                            <input type="range" name="attendance" id="attendanceInput" min="0" max="100" value="{% if request.form.attendance %}{{ request.form.attendance }}{% else %}85{% endif %}" oninput="document.getElementById('attValue').innerText = this.value + '%'">
+                            <span class="range-value" id="attValue">{% if request.form.attendance %}{{ request.form.attendance }}%{% else %}85%{% endif %}</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Assignment Completion (Pending)</label>
+                        <div class="input-wrapper">
+                            <div class="input-icon"><i class="fa-solid fa-layer-group"></i></div>
+                            <input type="number" name="assignment" min="1" max="10" value="{% if request.form.assignment %}{{ request.form.assignment }}{% else %}3{% endif %}" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Average Sleep Hours (Per Night)</label>
+                        <div class="input-wrapper">
+                            <div class="input-icon"><i class="fa-solid fa-moon"></i></div>
+                            <input type="number" step="0.1" name="sleep" min="0" max="24" value="{% if request.form.sleep %}{{ request.form.sleep }}{% else %}6.5{% endif %}" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Current Mood / Stress Level</label>
+                        <div class="input-wrapper">
+                            <div class="input-icon"><i class="fa-solid fa-brain"></i></div>
+                            <select name="mood" style="background: transparent; border: none; color: white; width: 100%; outline: none; appearance: none; -webkit-appearance: none;">
+                                <option style="color: black;" value="stressed" {% if request.form.mood == 'stressed' %}selected{% endif %}>Stressed / Anxious</option>
+                                <option style="color: black;" value="tired" {% if request.form.mood == 'tired' %}selected{% endif %}>Tired / Depressed</option>
+                                <option style="color: black;" value="good" {% if request.form.mood == 'good' %}selected{% endif %}>Neutral / Good</option>
+                                <option style="color: black;" value="relaxed" {% if request.form.mood == 'relaxed' %}selected{% endif %}>Happy / Relaxed</option>
+                            </select>
+                            <i class="fa-solid fa-chevron-down" style="color: #a1a1aa; font-size: 0.8rem;"></i>
+                        </div>
+                    </div>
+
+                    <!-- Hidden actual submit -->
+                    <button type="submit" class="submit-btn" id="realSubmit"></button>
+                </div>
+            </form>
+
+            <div class="loading-overlay" id="loadingOverlay">
+                <div class="loading-text">Analyzing with AI...</div>
+                <div class="spinner"></div>
             </div>
+        </div>
 
-            <div class="form-group">
-                <label>Assignment Load (1-10)</label>
-                <input type="number" name="assignment" min="1" max="10" placeholder="e.g., 5" required>
-            </div>
-
-            <div class="form-group">
-                <label>Sleep Hours</label>
-                <input type="number" step="0.1" name="sleep" placeholder="e.g., 6.5" required>
-            </div>
-
-            <div class="form-group">
-                <label>Mood</label>
-                <input type="text" name="mood" placeholder="e.g., stressed, happy, tired" required>
-                <span class="note">Use words like: stress, tired, anxious, depressed, happy, good, relaxed</span>
-            </div>
-
-            <button type="submit" onclick="showLoading()">Predict Risk</button>
-            <p id="loading">🔄 Analyzing data...</p>
-
-
-        </form>
+        <!-- The hidden button that triggers animation then submit. Placed here to overlap properly -->
+        <!-- Since we want to let users click it easily, I'll use an event listener on the form wrapper or add a visible button if needed. -->
+        <!-- Wait, I need a visible button somewhere! In the reference image, the form is submitted via some means, possibly automatically or a button hidden under the loading. I'll add a visible button at the bottom of the form grid. -->
+        
+        <button type="button" onclick="startAnalysis()" style="margin-top: -10px; margin-bottom: 25px; background: linear-gradient(90deg, #9333ea, #7e22ce); color: white; border: none; padding: 12px 30px; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; box-shadow: 0 4px 15px rgba(147, 51, 234, 0.4); transition: transform 0.2s;">Run Analysis</button>
 
         {% if risk %}
-        <div class="result-box {{ risk|lower }}">
-            <h3>{{ risk }}</h3>
-            <p>Score: {{ risk_score }}%</p>
-            <p>{{ suggestion }}</p>
-
-            <ul>
-                {% for r in reasons %}
-                <li>{{ r }}</li>
-                {% endfor %}
-            </ul>
+        <div class="result-container {{ risk|lower }}" id="resultSection">
+            <div class="gauge-section">
+                <div class="risk-label">{{ risk|capitalize }} Risk</div>
+                <div class="gauge">
+                    <div class="gauge-bg"></div>
+                    <!-- Map 0-100 to rotate(-45deg) to rotate(135deg) -->
+                    <div class="gauge-fill" style="transform: rotate(calc(-45deg + ({{ risk_score }} / 100) * 180deg));"></div>
+                    <div class="gauge-text">
+                        <span>Risk Score:</span>
+                        <strong>{{ risk_score }} / 100</strong>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="reasons-section">
+                <h3>Why this result?</h3>
+                <ul class="reason-list">
+                    {% for r in reasons %}
+                    <li>
+                        <i class="fa-solid {% if risk == 'HIGH' %}fa-fire{% elif risk == 'MEDIUM' %}fa-triangle-exclamation{% else %}fa-check-circle{% endif %}"></i> 
+                        {{ r }}
+                    </li>
+                    {% endfor %}
+                    {% if not reasons %}
+                    <li><i class="fa-solid fa-check-circle"></i> Analysis looks good based on inputs.</li>
+                    {% endif %}
+                </ul>
+            </div>
         </div>
         {% endif %}
 
-        <!-- ADD THIS BELOW RESULT BOX (DO NOT CHANGE ANYTHING ELSE) -->
-
-        {% if doctors %}
-        <div class="doctor-box">
-            <h3>🏥 Nearby Support Options</h3>
-            <p>Consider reaching out to professionals:</p>
-            <ul>
-                {% for name, link in doctors %}
-                <li>
-                    <a href="{{ link }}" target="_blank">
-                        {{ name }} → View on Google Maps
+        {% if support_options or risk %}
+        <div class="support-wrapper">
+            <div class="support-title">Nearby Support Options</div>
+            <div class="support-cards">
+                {% if support_options %}
+                    {% for name, link, icon, action in support_options %}
+                    <a href="{{ link }}" target="_blank" class="support-card">
+                        <div class="support-icon"><i class="{{ icon }}"></i></div>
+                        <div class="support-info">
+                            <div class="support-name">{{ name }}</div>
+                            <div class="support-action">{{ action }}</div>
+                        </div>
+                        <div class="support-external"><i class="fa-solid fa-arrow-up-right-from-square"></i></div>
                     </a>
-                </li>
-                {% endfor %}
-            </ul>
+                    {% endfor %}
+                {% endif %}
+            </div>
         </div>
         {% endif %}
-    </div>
+
+    </main>
+
+    <footer>
+        Prototype AI-Based Burnout Predictor. Designed for Academic Well-being. &copy; 2024
+    </footer>
 
     <script>
-        function showLoading() {
-            document.getElementById("loading").style.display = "block";
+        // Trigger fake loading before real form submit
+        function startAnalysis() {
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.classList.add('active');
+            
+            // Optional: dim the results if visible
+            const resultSection = document.getElementById('resultSection');
+            if(resultSection) resultSection.style.opacity = '0.3';
+            
+            // Submit form after 1.5 seconds to show the loading animation
+            setTimeout(() => {
+                document.getElementById('predictForm').submit();
+            }, 1200);
         }
     </script>
-
-
 </body>
-
 </html>
