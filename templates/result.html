@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction Result</title>
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --background: #F3F4F6;
+            --surface: #FFFFFF;
+            --text: #1F2937;
+            --low: #10B981;
+            --medium: #F59E0B;
+            --high: #EF4444;
+        }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: var(--background);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background-color: var(--surface);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+        }
+        h2 { 
+            margin-top: 0;
+            color: var(--text);
+        }
+        .result-box { 
+            margin: 30px 0;
+            padding: 25px;
+            border-radius: 8px;
+            background-color: #F9FAFB;
+            border: 1px solid #E5E7EB;
+        }
+        .risk-level {
+            font-size: 2em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .risk-low { color: var(--low); }
+        .risk-medium { color: var(--medium); }
+        .risk-high { color: var(--high); }
+        
+        .score {
+            font-size: 1.2em;
+            color: #4B5563;
+            margin-bottom: 20px;
+        }
+        .suggestions {
+            font-size: 1.1em;
+            line-height: 1.5;
+            padding: 15px;
+            background-color: #EEF2FF;
+            border-radius: 6px;
+            color: #3730A3;
+        }
+        .btn-back { 
+            display: inline-block; 
+            padding: 10px 20px;
+            background-color: transparent;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            border: 2px solid var(--primary);
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        .btn-back:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Your Assessment Result</h2>
+        
+        <div class="result-box">
+            <div class="score">Risk Score: <strong>{{ risk_score }}</strong></div>
+            <div class="risk-level {% if risk_level == 'LOW' %}risk-low{% elif risk_level == 'MEDIUM' %}risk-medium{% else %}risk-high{% endif %}">
+                {{ risk_level }} RISK
+            </div>
+        </div>
+        
+        <div class="suggestions">
+            <strong>Suggestion:</strong><br>
+            {{ suggestions }}
+        </div>
+        
+        <br><br>
+        <a href="/" class="btn-back">&larr; Take Assessment Again</a>
+    </div>
+</body>
+</html>

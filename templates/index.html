@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academic Burnout Predictor</title>
+
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --background: #F3F4F6;
+            --surface: #FFFFFF;
+            --text: #1F2937;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--background);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            width: 400px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #4F46E5;
+            color: white;
+            border: none;
+        }
+
+        .result-box {
+            margin-top: 20px;
+            padding: 10px;
+        }
+
+        .low {
+            background: #d1fae5;
+        }
+
+        .medium {
+            background: #fef3c7;
+        }
+
+        .high {
+            background: #fee2e2;
+        }
+
+        .doctor-box {
+            margin-top: 20px;
+            padding: 10px;
+            background: #e0f2fe;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h2>Burnout Predictor</h2>
+
+        <form action="/predict" method="POST">
+            <div class="form-group">
+                <label>Attendance (%)</label>
+                <input type="number" name="attendance" min="0" max="100" placeholder="e.g., 85" required>
+            </div>
+
+            <div class="form-group">
+                <label>Assignment Load (1-10)</label>
+                <input type="number" name="assignment" min="1" max="10" placeholder="e.g., 5" required>
+            </div>
+
+            <div class="form-group">
+                <label>Sleep Hours</label>
+                <input type="number" step="0.1" name="sleep" placeholder="e.g., 6.5" required>
+            </div>
+
+            <div class="form-group">
+                <label>Mood</label>
+                <input type="text" name="mood" placeholder="e.g., stressed, happy, tired" required>
+                <span class="note">Use words like: stress, tired, anxious, depressed, happy, good, relaxed</span>
+            </div>
+
+            <button type="submit" onclick="showLoading()">Predict Risk</button>
+            <p id="loading">🔄 Analyzing data...</p>
+
+
+        </form>
+
+        {% if risk %}
+        <div class="result-box {{ risk|lower }}">
+            <h3>{{ risk }}</h3>
+            <p>Score: {{ risk_score }}%</p>
+            <p>{{ suggestion }}</p>
+
+            <ul>
+                {% for r in reasons %}
+                <li>{{ r }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <!-- ADD THIS BELOW RESULT BOX (DO NOT CHANGE ANYTHING ELSE) -->
+
+        {% if doctors %}
+        <div class="doctor-box">
+            <h3>🏥 Nearby Support Options</h3>
+            <p>Consider reaching out to professionals:</p>
+            <ul>
+                {% for name, link in doctors %}
+                <li>
+                    <a href="{{ link }}" target="_blank">
+                        {{ name }} → View on Google Maps
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        function showLoading() {
+            document.getElementById("loading").style.display = "block";
+        }
+    </script>
+
+
+</body>
+
+</html>
